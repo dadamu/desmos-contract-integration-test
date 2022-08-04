@@ -171,12 +171,13 @@ dependencies = [
 [[package]]
 name = "cw-multi-test"
 version = "0.13.4"
-source = "git+https://github.com/dadamu/cw-plus?branch=paul/fix-contract-wrapper#d7ee87a0e87446221c3b99eb8163f7dace63b1fa"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3f9a8ab7c3c29ec93cb7a39ce4b14a05e053153b4a17ef7cf2246af1b7c087e"
 dependencies = [
  "anyhow",
  "cosmwasm-std",
  "cosmwasm-storage",
- "cw-storage-plus 0.13.4 (git+https://github.com/dadamu/cw-plus?branch=paul/fix-contract-wrapper)",
+ "cw-storage-plus",
  "cw-utils",
  "derivative",
  "itertools",
@@ -198,19 +199,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "cw-storage-plus"
-version = "0.13.4"
-source = "git+https://github.com/dadamu/cw-plus?branch=paul/fix-contract-wrapper#d7ee87a0e87446221c3b99eb8163f7dace63b1fa"
-dependencies = [
- "cosmwasm-std",
- "schemars",
- "serde",
-]
-
-[[package]]
 name = "cw-utils"
 version = "0.13.4"
-source = "git+https://github.com/dadamu/cw-plus?branch=paul/fix-contract-wrapper#d7ee87a0e87446221c3b99eb8163f7dace63b1fa"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dbaecb78c8e8abfd6b4258c7f4fbeb5c49a5e45ee4d910d3240ee8e1d714e1b"
 dependencies = [
  "cosmwasm-std",
  "schemars",
@@ -225,7 +217,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04cf4639517490dd36b333bbd6c4fbd92e325fd0acf4683b41753bc5eb63bfc1"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus 0.13.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cw-storage-plus",
  "schemars",
  "serde",
 ]
@@ -253,7 +245,7 @@ dependencies = [
 [[package]]
 name = "desmos-bindings"
 version = "1.0.1"
-source = "git+https://github.com/dadamu/desmos-bindings.git?branch=paul/fix-multi-test#02ec43bb31206ecde8f6af4818ff6e9e6b56a3a8"
+source = "git+https://github.com/desmos-labs/desmos-bindings.git?branch=paul/fix-mock-deps#e6b5bcb029666a3b514e2d77009d1090a701b8cb"
 dependencies = [
  "anyhow",
  "cosmwasm-std",
@@ -412,7 +404,7 @@ dependencies = [
  "cosmwasm-std",
  "cosmwasm-storage",
  "cw-multi-test",
- "cw-storage-plus 0.13.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cw-storage-plus",
  "cw2",
  "desmos-bindings",
  "schemars",

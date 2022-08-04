@@ -47,8 +47,9 @@ cw2 = "0.13.2"
 schemars = "0.8.8"
 serde = { version = "1.0.137", default-features = false, features = ["derive"] }
 thiserror = { version = "1.0.31" }
-desmos-bindings = { git = "https://github.com/dadamu/desmos-bindings.git", branch = "paul/fix-multi-test", default-features = false, features = ["mocks"]}
+desmos-bindings = { git = "https://github.com/desmos-labs/desmos-bindings.git", branch = "paul/fix-mock-deps", default-features = false, features = ["mocks"]}
 
 [dev-dependencies]
 cosmwasm-schema = "1.0.0"
-cw-multi-test = { git = "https://github.com/dadamu/cw-plus", branch = "paul/fix-contract-wrapper"}
+cw-multi-test = "0.13.4"
+
