@@ -2,10 +2,11 @@
 mod tests {
     use crate::helpers::CwTemplateContract;
     use crate::msg::InstantiateMsg;
-    use cosmwasm_std::{Addr, Coin, Empty, Uint128};
-    use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
+    use cosmwasm_std::Addr;
+    use cw_multi_test::{Contract, ContractWrapper, Executor};
+    use desmos_bindings::{msg::DesmosMsg, query::DesmosQuery, mocks::mock_apps::{mock_desmos_app, DesmosApp}};
 
-    pub fn contract_template() -> Box<dyn Contract<Empty>> {
+    pub fn contract_template() -> Box<dyn Contract<DesmosMsg, DesmosQuery>> {
         let contract = ContractWrapper::new(
             crate::contract::execute,
             crate::contract::instantiate,
@@ -16,26 +17,9 @@ mod tests {
 
     const USER: &str = "USER";
     const ADMIN: &str = "ADMIN";
-    const NATIVE_DENOM: &str = "denom";
 
-    fn mock_app() -> App {
-        AppBuilder::new().build(|router, _, storage| {
-            router
-                .bank
-                .init_balance(
-                    storage,
-                    &Addr::unchecked(USER),
-                    vec![Coin {
-                        denom: NATIVE_DENOM.to_string(),
-                        amount: Uint128::new(1),
-                    }],
-                )
-                .unwrap();
-        })
-    }
-
-    fn proper_instantiate() -> (App, CwTemplateContract) {
-        let mut app = mock_app();
+    fn proper_instantiate() -> (DesmosApp, CwTemplateContract) {
+        let mut app = mock_desmos_app();
         let cw_template_id = app.store_code(contract_template());
 
         let msg = InstantiateMsg { count: 1i32 };

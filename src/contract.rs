@@ -6,6 +6,7 @@ use cw2::set_contract_version;
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, GetCountResponse, InstantiateMsg, QueryMsg};
 use crate::state::{State, STATE};
+use desmos_bindings::{msg::DesmosMsg, query::DesmosQuery};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:integration-test";
@@ -13,11 +14,11 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
-    deps: DepsMut,
+    deps: DepsMut<DesmosQuery>,
     _env: Env,
     info: MessageInfo,
     msg: InstantiateMsg,
-) -> Result<Response, ContractError> {
+) -> Result<Response<DesmosMsg>, ContractError> {
     let state = State {
         count: msg.count,
         owner: info.sender.clone(),
@@ -33,18 +34,18 @@ pub fn instantiate(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
-    deps: DepsMut,
+    deps: DepsMut<DesmosQuery>,
     _env: Env,
     info: MessageInfo,
     msg: ExecuteMsg,
-) -> Result<Response, ContractError> {
+) -> Result<Response<DesmosMsg>, ContractError> {
     match msg {
         ExecuteMsg::Increment {} => try_increment(deps),
         ExecuteMsg::Reset { count } => try_reset(deps, info, count),
     }
 }
 
-pub fn try_increment(deps: DepsMut) -> Result<Response, ContractError> {
+pub fn try_increment(deps: DepsMut<DesmosQuery>) -> Result<Response<DesmosMsg>, ContractError> {
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         state.count += 1;
         Ok(state)
@@ -53,7 +54,7 @@ pub fn try_increment(deps: DepsMut) -> Result<Response, ContractError> {
     Ok(Response::new().add_attribute("method", "try_increment"))
 }
 
-pub fn try_reset(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Response, ContractError> {
+pub fn try_reset(deps: DepsMut<DesmosQuery>, info: MessageInfo, count: i32) -> Result<Response<DesmosMsg>, ContractError> {
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         if info.sender != state.owner {
             return Err(ContractError::Unauthorized {});
@@ -65,13 +66,13 @@ pub fn try_reset(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Respons
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
+pub fn query(deps: Deps<DesmosQuery>, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
         QueryMsg::GetCount {} => to_binary(&query_count(deps)?),
     }
 }
 
-fn query_count(deps: Deps) -> StdResult<GetCountResponse> {
+fn query_count(deps: Deps<DesmosQuery>) -> StdResult<GetCountResponse> {
     let state = STATE.load(deps.storage)?;
     Ok(GetCountResponse { count: state.count })
 }
@@ -79,12 +80,13 @@ fn query_count(deps: Deps) -> StdResult<GetCountResponse> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+    use cosmwasm_std::testing::{mock_env, mock_info};
     use cosmwasm_std::{coins, from_binary};
+    use desmos_bindings::mocks::mock_queriers::mock_dependencies_with_custom_querier;
 
     #[test]
     fn proper_initialization() {
-        let mut deps = mock_dependencies();
+        let mut deps = mock_dependencies_with_custom_querier(&[]);
 
         let msg = InstantiateMsg { count: 17 };
         let info = mock_info("creator", &coins(1000, "earth"));
@@ -101,7 +103,7 @@ mod tests {
 
     #[test]
     fn increment() {
-        let mut deps = mock_dependencies();
+        let mut deps =  mock_dependencies_with_custom_querier(&[]);
 
         let msg = InstantiateMsg { count: 17 };
         let info = mock_info("creator", &coins(2, "token"));
@@ -120,7 +122,7 @@ mod tests {
 
     #[test]
     fn reset() {
-        let mut deps = mock_dependencies();
+        let mut deps =  mock_dependencies_with_custom_querier(&[]);
 
         let msg = InstantiateMsg { count: 17 };
         let info = mock_info("creator", &coins(2, "token"));
